@@ -625,7 +625,10 @@
     <bool>false</bool>
    </property>
    <property name="autoFillBackground">
-    <bool>true</bool>
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QMenuBar {background-color: rgb(240, 240, 240);}</string>
    </property>
    <property name="defaultUp">
     <bool>false</bool>
