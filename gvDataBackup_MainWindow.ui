@@ -114,9 +114,9 @@
       <property name="tabBarAutoHide">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="mainTAB">
        <attribute name="title">
-        <string>Tab 1</string>
+        <string>Main</string>
        </attribute>
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
@@ -213,9 +213,29 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="refreshBTN">
            <property name="text">
-            <string>PushButton</string>
+            <string>Refresh</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="upBTN">
+           <property name="text">
+            <string>Up</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseBTN">
+           <property name="text">
+            <string>Browse</string>
            </property>
            <property name="flat">
             <bool>true</bool>
