@@ -26,6 +26,22 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 		uic.loadUi(uiPath, self)
 
+		self.startBTN.clicked.connect(self.startBackup)
+		self.sourceRefreshBTN.clicked.connect(self.sourceRefresh)
+		self.destRefreshBTN.clicked.connect(self.destRefresh)
+
+	@pyqtSlot()
+	def sourceRefresh(self):
+		print('sourceRefreshBTN clicked')
+
+	@pyqtSlot()
+	def destRefresh(self):
+		print('destRefreshBTN clicked')
+
+	@pyqtSlot()
+	def startBackup(self):
+		pass
+
 
 if __name__ == "__main__":
 	app = QtWidgets.QApplication(sys.argv)
