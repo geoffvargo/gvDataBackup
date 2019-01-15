@@ -38,10 +38,12 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.model_2 = QFileSystemModel()
 		self.model_2.setRootPath('')
 
-		srcDirView = self.sourceDirView
-		srcDirView.setModel(self.model_1)
+		self.srcDirView: QTreeView = self.ui.findChild(QTreeView, "sourceDirView")
+		self.dstDirV: QTreeView = self.ui.findChild(QTreeView, "destDirView")
 
-		self.destDirView.setModel(self.model_2)
+		self.srcDirView.setModel(self.model_1)
+
+		self.dstDirV.setModel(self.model_2)
 
 		# self.sourceFileListView
 
