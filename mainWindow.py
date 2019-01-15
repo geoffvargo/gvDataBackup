@@ -38,12 +38,17 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.model_2 = QFileSystemModel()
 		self.model_2.setRootPath('')
 
+		# link QML elements to Python variables
 		self.srcDirView: QTreeView = self.ui.findChild(QTreeView, "sourceDirView")
 		self.dstDirV: QTreeView = self.ui.findChild(QTreeView, "destDirView")
+		self.srcFlistView: QListView = self.ui.findChild(QListView, "sourceFileListView")
+		self.dstFlistView: QListView = self.ui.findChild(QListView, "destFileListView")
 
 		self.srcDirView.setModel(self.model_1)
+		self.srcFlistView.setModel(self.model_1)
 
 		self.dstDirV.setModel(self.model_2)
+		self.dstFlistView.setModel(self.model_2)
 
 		# self.sourceFileListView
 
