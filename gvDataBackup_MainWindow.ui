@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
-    <height>676</height>
+    <width>1200</width>
+    <height>900</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -220,7 +220,13 @@
            <enum>Qt::Horizontal</enum>
           </property>
           <widget class="QTreeView" name="sourceDirView">
+           <property name="editTriggers">
+            <set>QAbstractItemView::CurrentChanged|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+           </property>
            <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="sortingEnabled">
             <bool>true</bool>
            </property>
           </widget>
@@ -307,7 +313,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit"/>
+            <widget class="QLineEdit" name="sourcePathLNE"/>
            </item>
            <item>
             <widget class="QPushButton" name="sourceRefreshBTN">
@@ -431,7 +437,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_3"/>
+            <widget class="QLineEdit" name="destPathLNE"/>
            </item>
            <item>
             <widget class="QPushButton" name="destRefreshBTN">
@@ -477,7 +483,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>900</width>
+     <width>1200</width>
      <height>25</height>
     </rect>
    </property>

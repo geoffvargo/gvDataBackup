@@ -2,8 +2,9 @@
 import os, sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtCore import QObject, pyqtSlot, QFile
+from PyQt5.QtCore import QObject, pyqtSlot, QFile, QModelIndex
 from PyQt5.QtWidgets import *
+import traceback
 
 
 def resource_path(relative_path):
@@ -34,23 +35,40 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 		self.model_1 = QFileSystemModel()
 		self.model_1.setRootPath('')
+		# self.model_1.sel
 
 		self.model_2 = QFileSystemModel()
 		self.model_2.setRootPath('')
 
 		# link QML elements to Python variables
+		self.mainWin: QMainWindow = self.ui.findChild(QMainWindow, "MainWindow")
 		self.srcDirView: QTreeView = self.ui.findChild(QTreeView, "sourceDirView")
 		self.dstDirV: QTreeView = self.ui.findChild(QTreeView, "destDirView")
 		self.srcFlistView: QListView = self.ui.findChild(QListView, "sourceFileListView")
 		self.dstFlistView: QListView = self.ui.findChild(QListView, "destFileListView")
+		self.srcPathLNE: QLineEdit = self.ui.findChild(QLineEdit, "sourcePathLNE")
+		self.dstPathLNE: QLineEdit = self.ui.findChild(QLineEdit, "destPathLNE")
 
 		self.srcDirView.setModel(self.model_1)
 		self.srcFlistView.setModel(self.model_1)
 
+		self.srcDirView.clicked.connect(self.srcDirSelected)
+
 		self.dstDirV.setModel(self.model_2)
 		self.dstFlistView.setModel(self.model_2)
 
-		# self.sourceFileListView
+	@pyqtSlot(QModelIndex)
+	def srcDirSelected(self, index):
+		file_path = self.model_1.index(index.row(), 0, index.parent())
+
+		filename = self.model_1.fileName(file_path)
+		pathname = self.model_1.filePath(file_path)
+		
+		print(pathname + filename)
+
+	@pyqtSlot()
+	def srcDirViewClick(self):
+		print('srcDirView clickeds')
 
 	@pyqtSlot()
 	def sourceRefresh(self):
