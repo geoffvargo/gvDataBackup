@@ -106,7 +106,7 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 	@pyqtSlot(name='')
 	def startBackup(self):
-		pass
+		print('backup started')
 
 
 if __name__ == "__main__":
