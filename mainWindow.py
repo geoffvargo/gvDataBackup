@@ -2,7 +2,7 @@
 import os, sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtCore import QObject, pyqtSlot, QFile, QModelIndex
+from PyQt5.QtCore import QObject, pyqtSlot, QFile, QModelIndex, pyqtSignal, QDir
 from PyQt5.QtWidgets import *
 import traceback
 
@@ -39,6 +39,12 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.model_2 = QFileSystemModel()
 		self.model_2.setRootPath('')
 
+		self.model_3 = QFileSystemModel()
+		self.model_3.setRootPath('')
+
+		self.model_4 = QFileSystemModel()
+		self.model_4.setRootPath('')
+
 		### link QML elements to Python variables ###
 		self.mainWin: QMainWindow = self.ui.findChild(QMainWindow, "MainWindow")
 		self.srcDirView: QTreeView = self.ui.findChild(QTreeView, "sourceDirView")
@@ -50,50 +56,55 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 		### set up file-system models ###
 		self.srcDirView.setModel(self.model_1)
-		self.srcFlistView.setModel(self.model_1)
+		self.srcFlistView.setModel(self.model_3)
 		self.dstDirV.setModel(self.model_2)
-		self.dstFlistView.setModel(self.model_2)
+		self.dstFlistView.setModel(self.model_4)
 
 		### selecting item(s) in treeview(s) return(s) pathname(s) ###
 		self.srcDirView.clicked.connect(self.srcDirSelected)
 		self.dstDirV.clicked.connect(self.dstDirSelected)
 
-	@pyqtSlot(QModelIndex)
-	def srcDirSelected(self, index):
+	@pyqtSlot(QModelIndex, name='index1')
+	def srcDirSelected(self, index1):
 		''' Get selected path from srcDirView '''
-		file_path = self.model_1.index(index.row(), 0, index.parent())
 
-		filename = self.model_1.fileName(file_path)
-		pathname = self.model_1.filePath(file_path)
+		### get path from srcDirView  ###
+		path = self.model_1.fileInfo(index1).absoluteFilePath()
 
-		print(pathname + filename)
+		print(path)
 
-		return pathname
+		### update srcFlistView ###
+		self.srcFlistView.setRootIndex(self.model_3.setRootPath(path))
 
-	@pyqtSlot(QModelIndex)
-	def dstDirSelected(self, index):
+		return path
+
+	@pyqtSlot(QModelIndex, name='index2')
+	def dstDirSelected(self, index2):
 		''' Get selected path from dstDirView '''
-		currentRow = self.model_2.index(index.row(), 0, index.parent())
 
-		pathname = self.model_2.filePath(currentRow)
+		### get path from dstDirView ###
+		path = self.model_2.fileInfo(index2).absoluteFilePath()
 
-		print(pathname)
+		print(path)
 
-		return pathname
+		### update dstFlistView ###
+		self.dstFlistView.setRootIndex(self.model_4.setRootPath(path))
 
-	@pyqtSlot()
+		return path
+
+	@pyqtSlot(name='')
 	def srcDirViewClick(self):
 		print('srcDirView clickeds')
 
-	@pyqtSlot()
+	@pyqtSlot(name='')
 	def sourceRefresh(self):
 		print('sourceRefreshBTN clicked')
 
-	@pyqtSlot()
+	@pyqtSlot(name='')
 	def destRefresh(self):
 		print('destRefreshBTN clicked')
 
-	@pyqtSlot()
+	@pyqtSlot(name='')
 	def startBackup(self):
 		pass
 
