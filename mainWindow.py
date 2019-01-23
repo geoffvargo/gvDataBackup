@@ -24,9 +24,13 @@ uiPath = resource_path('gvDataBackup_MainWindow.ui')
 class MainWindowUI(QtWidgets.QMainWindow):
 	def __init__(self):
 		super(MainWindowUI, self).__init__()
-		global uiPath
 
+		global uiPath
 		self.ui = uic.loadUi(uiPath, self)
+
+		### the Source and Destination file-paths ###
+		self.srcPath = ''
+		self.destPath = ''
 
 		self.startBTN.clicked.connect(self.startBackup)
 		self.sourceRefreshBTN.clicked.connect(self.sourceRefresh)
@@ -49,6 +53,8 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.mainWin: QMainWindow = self.ui.findChild(QMainWindow, "MainWindow")
 		self.srcDirView: QTreeView = self.ui.findChild(QTreeView, "sourceDirView")
 		self.dstDirV: QTreeView = self.ui.findChild(QTreeView, "destDirView")
+		# self.srcFlistView: QListWidget = self.ui.findChild(QListView, "sourceFileListView")
+		# self.dstFlistView: QListWidget = self.ui.findChild(QListView, "destFileListView")
 		self.srcFlistView: QListView = self.ui.findChild(QListView, "sourceFileListView")
 		self.dstFlistView: QListView = self.ui.findChild(QListView, "destFileListView")
 		self.srcPathLNE: QLineEdit = self.ui.findChild(QLineEdit, "sourcePathLNE")
@@ -63,6 +69,9 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		### selecting item(s) in treeview(s) return(s) pathname(s) ###
 		self.srcDirView.clicked.connect(self.srcDirSelected)
 		self.dstDirV.clicked.connect(self.dstDirSelected)
+
+		### selecting item in listviews returns filename ###
+		self.srcFlistView.clicked.connect(self.srcFilesSelected)
 
 	@pyqtSlot(QModelIndex, name='index1')
 	def srcDirSelected(self, index1):
@@ -91,6 +100,14 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.dstFlistView.setRootIndex(self.model_4.setRootPath(path))
 
 		return path
+
+	@pyqtSlot()
+	def srcFilesSelected(self):
+		stuff = []
+		for i in self.srcFlistView.selectedIndexes():
+			stuff.append(self.model_3.filePath(i))
+		print(stuff)
+		return stuff
 
 	@pyqtSlot(name='')
 	def srcDirViewClick(self):

@@ -230,7 +230,14 @@
             <bool>true</bool>
            </property>
           </widget>
-          <widget class="QListView" name="sourceFileListView"/>
+          <widget class="QListView" name="sourceFileListView">
+           <property name="selectionMode">
+            <enum>QAbstractItemView::MultiSelection</enum>
+           </property>
+           <property name="selectionRectVisible">
+            <bool>true</bool>
+           </property>
+          </widget>
          </widget>
         </item>
         <item row="0" column="0">
@@ -354,7 +361,14 @@
            <enum>Qt::Horizontal</enum>
           </property>
           <widget class="QTreeView" name="destDirView"/>
-          <widget class="QListView" name="destFileListView"/>
+          <widget class="QListView" name="destFileListView">
+           <property name="selectionMode">
+            <enum>QAbstractItemView::MultiSelection</enum>
+           </property>
+           <property name="selectionRectVisible">
+            <bool>true</bool>
+           </property>
+          </widget>
          </widget>
         </item>
         <item row="0" column="0">
