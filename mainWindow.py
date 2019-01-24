@@ -20,6 +20,9 @@ def resource_path(relative_path):
 
 uiPath = resource_path('gvDataBackup_MainWindow.ui')
 
+absSrcPath: str = ''
+absDstPath: str = ''
+
 
 class MainWindowUI(QtWidgets.QMainWindow):
 	def __init__(self):
@@ -85,6 +88,10 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		### update srcFlistView ###
 		self.srcFlistView.setRootIndex(self.model_3.setRootPath(path))
 
+		global absSrcPath
+		absSrcPath = path
+
+		print(absSrcPath)
 		return path
 
 	@pyqtSlot(QModelIndex, name='index2')
