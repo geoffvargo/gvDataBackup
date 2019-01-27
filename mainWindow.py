@@ -20,15 +20,15 @@ def resource_path(relative_path):
 
 uiPath = resource_path('gvDataBackup_MainWindow.ui')
 
-### Source and Destination Paths ###
-absSrcPath: str = ''
-absDstPath: str = ''
-
-### options ###
-flags = ''
-
 
 class MainWindowUI(QtWidgets.QMainWindow):
+	### Source and Destination Paths ###
+	absSrcPath: str = ''
+	absDstPath: str = ''
+
+	### options ###
+	flags = ''
+
 	def __init__(self):
 		super(MainWindowUI, self).__init__()
 
