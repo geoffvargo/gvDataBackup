@@ -75,6 +75,7 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 		### selecting item in listviews returns filename ###
 		self.srcFlistView.clicked.connect(self.srcFilesSelected)
+		self.dstFlistView.clicked.connect(self.dstFilesSelected)
 
 	@pyqtSlot(QModelIndex, name='index1')
 	def srcDirSelected(self, index1):
@@ -113,6 +114,14 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		stuff = []
 		for i in self.srcFlistView.selectedIndexes():
 			stuff.append(self.model_3.filePath(i))
+		print(stuff)
+		return stuff
+
+	@pyqtSlot()
+	def dstFilesSelected(self):
+		stuff = []
+		for i in self.dstFlistView.selectedIndexes():
+			stuff.append(self.model_4.filePath(i))
 		print(stuff)
 		return stuff
 
