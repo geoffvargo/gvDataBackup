@@ -1,5 +1,5 @@
 # Define function to import external files when using PyInstaller.
-import os, sys
+import os, sys, subprocess
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtCore import QObject, pyqtSlot, QFile, QModelIndex, pyqtSignal, QDir
@@ -20,8 +20,12 @@ def resource_path(relative_path):
 
 uiPath = resource_path('gvDataBackup_MainWindow.ui')
 
+### Source and Destination Paths ###
 absSrcPath: str = ''
 absDstPath: str = ''
+
+### options ###
+flags = ''
 
 
 class MainWindowUI(QtWidgets.QMainWindow):
@@ -139,7 +143,8 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 	@pyqtSlot(name='')
 	def startBackup(self):
-		print('backup started')
+		# subprocess.call(['robocopy'], shell=True)
+		subprocess.call(['robocopy', '/?'], shell=True)
 
 
 if __name__ == "__main__":
