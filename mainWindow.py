@@ -27,7 +27,7 @@ class MainWindowUI(QtWidgets.QMainWindow):
 	absDstPath: str = ''
 
 	### options ###
-	flags = ''
+	opts = '/E /MT /COPY:DT'
 
 	def __init__(self):
 		super(MainWindowUI, self).__init__()
@@ -144,7 +144,11 @@ class MainWindowUI(QtWidgets.QMainWindow):
 	@pyqtSlot(name='')
 	def startBackup(self):
 		# subprocess.call(['robocopy'], shell=True)
-		subprocess.call(['robocopy', '/?'], shell=True)
+
+		if self.absSrcPath == '' or self.absDstPath == '':
+			subprocess.call(['robocopy', '/?'], shell=True)
+		else:
+			subprocess.call(['robocopy', self.opts], shell=True)
 
 
 if __name__ == "__main__":
