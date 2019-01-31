@@ -23,7 +23,6 @@ uiPath = resource_path('gvDataBackup_MainWindow.ui')
 
 class MainWindowUI(QtWidgets.QMainWindow):
 	def __init__(self):
-
 		super(MainWindowUI, self).__init__()
 
 		### options ###
