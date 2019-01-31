@@ -126,11 +126,11 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 	@pyqtSlot()
 	def dstFilesSelected(self):
-		stuff = []
-		for i in self.dstFlistView.selectedIndexes():
-			stuff.append(self.model_4.filePath(i))
-		print(stuff)
-		return stuff
+		dirry = self.model_4.filePath(self.dstFlistView.selectedIndexes().pop())
+
+		print(dirry)
+
+		return dirry
 
 	@pyqtSlot(name='')
 	def srcDirViewClick(self):

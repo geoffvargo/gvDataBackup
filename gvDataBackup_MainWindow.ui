@@ -363,7 +363,7 @@
           <widget class="QTreeView" name="destDirView"/>
           <widget class="QListView" name="destFileListView">
            <property name="selectionMode">
-            <enum>QAbstractItemView::MultiSelection</enum>
+            <enum>QAbstractItemView::SingleSelection</enum>
            </property>
            <property name="selectionRectVisible">
             <bool>true</bool>
