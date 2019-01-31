@@ -22,22 +22,20 @@ uiPath = resource_path('gvDataBackup_MainWindow.ui')
 
 
 class MainWindowUI(QtWidgets.QMainWindow):
-	### Source and Destination Paths ###
-	absSrcPath: str = ''
-	absDstPath: str = ''
-
-	### options ###
-	opts = '/E /MT /COPY:DT'
-
 	def __init__(self):
+
 		super(MainWindowUI, self).__init__()
+
+		### options ###
+		self.opts = ''
+		# self.opts = '/E /MT /COPY:DT'
 
 		global uiPath
 		self.ui = uic.loadUi(uiPath, self)
 
 		### the Source and Destination file-paths ###
 		self.srcPath = ''
-		self.destPath = ''
+		self.dstPath = ''
 
 		self.startBTN.clicked.connect(self.startBackup)
 		self.sourceRefreshBTN.clicked.connect(self.sourceRefresh)
@@ -88,15 +86,16 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		### get path from srcDirView  ###
 		path = self.model_1.fileInfo(index1).absoluteFilePath()
 
-		print(path)
+		print(f'path: {path}')
 
 		### update srcFlistView ###
 		self.srcFlistView.setRootIndex(self.model_3.setRootPath(path))
 
-		global absSrcPath
-		absSrcPath = path
+		### update self.srcPath ###
+		self.srcPath = path
 
-		print(absSrcPath)
+		print(f'srcPath: {self.srcPath}')
+
 		return path
 
 	@pyqtSlot(QModelIndex, name='index2')
@@ -106,10 +105,15 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		### get path from dstDirView ###
 		path = self.model_2.fileInfo(index2).absoluteFilePath()
 
-		print(path)
+		print(f'path: {path}')
 
 		### update dstFlistView ###
 		self.dstFlistView.setRootIndex(self.model_4.setRootPath(path))
+
+		### update srcPath ###
+		self.dstPath = path
+
+		print(f'dstPath: {self.dstPath}')
 
 		return path
 
@@ -143,12 +147,13 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 	@pyqtSlot(name='')
 	def startBackup(self):
-		# subprocess.call(['robocopy'], shell=True)
-
-		if self.absSrcPath == '' or self.absDstPath == '':
+		if self.opts == '':
 			subprocess.call(['robocopy', '/?'], shell=True)
 		else:
 			subprocess.call(['robocopy', self.opts], shell=True)
+
+		print(f'self.srcPath: {self.srcPath}')
+		print(f'self.dstPath: {self.dstPath}')
 
 
 if __name__ == "__main__":
