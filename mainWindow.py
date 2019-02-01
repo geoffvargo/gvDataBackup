@@ -25,16 +25,23 @@ class MainWindowUI(QtWidgets.QMainWindow):
 	def __init__(self):
 		super(MainWindowUI, self).__init__()
 
+		### Source and Destination selection flags ###
+		self.isSrcSelected = False
+		self.isDstSeleceted = False
+
+		### the Source and Destination directory-paths ###
+		self.srcDirPath = ''
+		self.dstDirPath = ''
+
+		### full Source file-path(s) ###
+		self.srcPaths = []
+
 		### options ###
 		self.opts = ''
 		# self.opts = '/E /MT /COPY:DT'
 
 		global uiPath
 		self.ui = uic.loadUi(uiPath, self)
-
-		### the Source and Destination file-paths ###
-		self.srcPath = ''
-		self.dstPath = ''
 
 		self.startBTN.clicked.connect(self.startBackup)
 		self.sourceRefreshBTN.clicked.connect(self.sourceRefresh)
@@ -91,14 +98,14 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.srcFlistView.setRootIndex(self.model_3.setRootPath(path))
 
 		### update self.srcPath ###
-		self.srcPath = path
+		self.srcDirPath = path
 
-		print(f'srcPath: {self.srcPath}')
+		print(f'self.srcDirPath: {self.srcPath}')
 
 		return path
 
 	@pyqtSlot(QModelIndex, name='index2')
-	def dstDirSelected(self, index2):
+	def dstDirSelected(self, index2) -> str:
 		''' Get selected path from dstDirView '''
 
 		### get path from dstDirView ###
@@ -110,9 +117,9 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.dstFlistView.setRootIndex(self.model_4.setRootPath(path))
 
 		### update srcPath ###
-		self.dstPath = path
+		self.dstDirPath = path
 
-		print(f'dstPath: {self.dstPath}')
+		print(f'self.dstDirPath: {self.dstDirPath}')
 
 		return path
 
@@ -121,7 +128,14 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		stuff = []
 		for i in self.srcFlistView.selectedIndexes():
 			stuff.append(self.model_3.filePath(i))
-		print(stuff)
+		self.srcPaths = stuff
+
+		print(self.srcPaths)
+
+		### mark Source as being selected ###
+		if self.srcPaths is not []:
+			self.isSrcSelected = True
+
 		return stuff
 
 	@pyqtSlot()
@@ -129,6 +143,10 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		dirry = self.model_4.filePath(self.dstFlistView.selectedIndexes().pop())
 
 		print(dirry)
+
+		### mark destination as being selected ###
+		if dirry is not '':
+			self.isDstSeleceted = True
 
 		return dirry
 
@@ -146,13 +164,16 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 	@pyqtSlot(name='')
 	def startBackup(self):
-		if self.opts == '':
-			subprocess.call(['robocopy', '/?'], shell=True)
-		else:
-			subprocess.call(['robocopy', self.opts], shell=True)
+		# if self.opts == '':
+		# 	subprocess.call(['robocopy', '/?'], shell=True)
+		# else:
+		# 	subprocess.call(['robocopy', self.opts], shell=True)
 
 		print(f'self.srcPath: {self.srcPath}')
 		print(f'self.dstPath: {self.dstPath}')
+
+		print(f'Source selected = {self.isSrcSelected}')
+		print(f'Destination selected = {self.isDstSeleceted}')
 
 
 if __name__ == "__main__":
