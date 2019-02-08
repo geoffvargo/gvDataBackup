@@ -25,6 +25,8 @@ class MainWindowUI(QtWidgets.QMainWindow):
 	def __init__(self):
 		super(MainWindowUI, self).__init__()
 
+		self.warn = QDialog()
+
 		### Source and Destination selection flags ###
 		self.isSrcSelected = False
 		self.isDstSeleceted = False
@@ -85,6 +87,31 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.srcFlistView.clicked.connect(self.srcFilesSelected)
 		self.dstFlistView.clicked.connect(self.dstFilesSelected)
 
+	def safetyDialog(self):
+		self.warn.setModal(True)
+
+		okButton = QPushButton('OK')
+		cancelButton = QPushButton('Cancel')
+
+		hlayout = QHBoxLayout()
+		hlayout.addWidget(okButton)
+		hlayout.addWidget(cancelButton)
+
+		self.warn.setLayout(hlayout)
+
+		okButton.clicked.connect(self.acceptWarn)
+		cancelButton.clicked.connect(self.rejectWarn)
+
+		self.warn.exec()
+
+	@pyqtSlot()
+	def rejectWarn(self):
+		self.warn.reject()
+
+	@pyqtSlot()
+	def acceptWarn(self):
+		self.warn.accept()
+
 	@pyqtSlot(QModelIndex, name='index1')
 	def srcDirSelected(self, index1):
 		''' Get selected path from srcDirView '''
@@ -100,7 +127,7 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		### update self.srcPath ###
 		self.srcDirPath = path
 
-		print(f'self.srcDirPath: {self.srcPath}')
+		# print(f'self.srcDirPath: {self.srcPath}')
 
 		return path
 
@@ -147,6 +174,7 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		### mark destination as being selected ###
 		if dirry is not '':
 			self.isDstSeleceted = True
+			self.dstDirPath = dirry
 
 		return dirry
 
@@ -169,11 +197,21 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		# else:
 		# 	subprocess.call(['robocopy', self.opts], shell=True)
 
-		print(f'self.srcPath: {self.srcPath}')
-		print(f'self.dstPath: {self.dstPath}')
+		# print(f'self.srcPath: {self.srcPath}')
+		# print(f'self.dstPath: {self.dstPath}')
 
-		print(f'Source selected = {self.isSrcSelected}')
-		print(f'Destination selected = {self.isDstSeleceted}')
+		# print(f'Source selected = {self.isSrcSelected}')
+		# print(f'Destination selected = {self.isDstSeleceted}')
+
+		self.safetyDialog()
+
+		if self.isSrcSelected and self.isDstSeleceted:
+			self.opts = '/E /MT /COPY:DT'
+
+			print(f'robocopy {self.opts} {self.srcDirPath} {self.dstDirPath}')
+
+
+# subprocess.call(['robocopy', self.opts, self.srcDirPath, self.dstDirPath], shell=True)
 
 
 if __name__ == "__main__":
