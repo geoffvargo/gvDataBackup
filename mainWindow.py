@@ -87,24 +87,31 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.srcFlistView.clicked.connect(self.srcFilesSelected)
 		self.dstFlistView.clicked.connect(self.dstFilesSelected)
 
-	def safetyDialog(self):
+	def safetyDialog(self) -> None:
+		'''	Spawn a modal QDialog window with info about the source and destination locations, as well as
+			the current robocopy options.'''
+		### set the modal property to True ###
 		self.warn.setModal(True)
 
+		### 'glayout' is the root layout widget for this dialog window ###
 		glayout = QGridLayout(self.warn)
 
+		### 'msg' is the message string to be displayed ###
 		msg = QLabel()
 		msg.setText('asdf')
 		glayout.addWidget(msg, 0, 0, 1, 1)
 
+		### 'buttonbox' contains our 'OK' and 'Cancel' buttons ###
 		buttonbox = QDialogButtonBox()
 		buttonbox.setOrientation(QtCore.Qt.Horizontal)
 		buttonbox.setStandardButtons(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
-
 		glayout.addWidget(buttonbox, 1, 0, 1, 1)
 
+		### set up actions for our 'OK' and 'Cancel' buttons ###
 		buttonbox.accepted.connect(self.warn.accept)
 		buttonbox.rejected.connect(self.warn.reject)
 
+		### spawn the dialog box ###
 		self.warn.exec()
 
 	@pyqtSlot()
