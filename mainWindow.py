@@ -90,17 +90,20 @@ class MainWindowUI(QtWidgets.QMainWindow):
 	def safetyDialog(self):
 		self.warn.setModal(True)
 
-		okButton = QPushButton('OK')
-		cancelButton = QPushButton('Cancel')
+		glayout = QGridLayout(self.warn)
 
-		hlayout = QHBoxLayout()
-		hlayout.addWidget(okButton)
-		hlayout.addWidget(cancelButton)
+		msg = QLabel()
+		msg.setText('asdf')
+		glayout.addWidget(msg, 0, 0, 1, 1)
 
-		self.warn.setLayout(hlayout)
+		buttonbox = QDialogButtonBox()
+		buttonbox.setOrientation(QtCore.Qt.Horizontal)
+		buttonbox.setStandardButtons(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
 
-		okButton.clicked.connect(self.acceptWarn)
-		cancelButton.clicked.connect(self.rejectWarn)
+		glayout.addWidget(buttonbox, 1, 0, 1, 1)
+
+		buttonbox.accepted.connect(self.warn.accept)
+		buttonbox.rejected.connect(self.warn.reject)
 
 		self.warn.exec()
 
