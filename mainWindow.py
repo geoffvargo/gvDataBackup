@@ -10,21 +10,22 @@ import traceback
 def resource_path(relative_path):
 	""" Get absolute path to resource, works for dev and for PyInstaller """
 	try:
-		# PyInstaller creates a temp folder and stores path in _MEIPASS
+		### PyInstaller creates a temp folder and stores path in _MEIPASS ##
 		base_path = sys._MEIPASS
 	except Exception:
 		base_path = os.path.abspath(".")
 
 	return os.path.join(base_path, relative_path)
 
-
+### connect *.ui file to code ###
 uiPath = resource_path('gvDataBackup_MainWindow.ui')
 
-
+### the meat of the program  ###
 class MainWindowUI(QtWidgets.QMainWindow):
 	def __init__(self):
 		super(MainWindowUI, self).__init__()
 
+		### warning dialog ###
 		self.warn = QDialog()
 
 		### Source and Destination selection flags ###
@@ -38,9 +39,12 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		### full Source file-path(s) ###
 		self.srcPaths = []
 
-		### options ###
-		self.opts = ''
-		# self.opts = '/E /MT /COPY:DT'
+		### options for Robocopy ###
+		# self.opts = ''
+		self.opts = '/E /MT /COPY:DT'
+
+		### the command string for Robocopy ###
+		self.cmdStr = ''
 
 		global uiPath
 		self.ui = uic.loadUi(uiPath, self)
@@ -87,6 +91,10 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.srcFlistView.clicked.connect(self.srcFilesSelected)
 		self.dstFlistView.clicked.connect(self.dstFilesSelected)
 
+		### double-clicking a directory in a listview opens and displays that directory ###
+		self.srcFlistView.doubleClicked.connect(self.srcDirSelected)
+		self.dstFlistView.doubleClicked.connect(self.dstDirSelected)
+
 	def safetyDialog(self) -> None:
 		'''	Spawn a modal QDialog window with info about the source and destination locations, as well as
 			the current robocopy options.'''
@@ -98,7 +106,17 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 		### 'msg' is the message string to be displayed ###
 		msg = QLabel()
-		msg.setText('asdf')
+
+		if self.srcPaths != [] and self.dstDirPath != '':
+			msgSrcStr = self.srcPaths[0]
+			msgDstStr = self.dstDirPath
+
+			msgStr = f'roboform {msgSrcStr} {msgDstStr} {self.opts}'
+			self.cmdStr = f'roboform {msgSrcStr} {msgDstStr} {self.opts}'
+			msg.setText(msgStr)
+		else:
+			msg.setText('BLANK')
+
 		glayout.addWidget(msg, 0, 0, 1, 1)
 
 		### 'buttonbox' contains our 'OK' and 'Cancel' buttons ###
@@ -108,18 +126,23 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		glayout.addWidget(buttonbox, 1, 0, 1, 1)
 
 		### set up actions for our 'OK' and 'Cancel' buttons ###
-		buttonbox.accepted.connect(self.warn.accept)
-		buttonbox.rejected.connect(self.warn.reject)
+		buttonbox.accepted.connect(self.acceptWarn)
+		buttonbox.rejected.connect(self.rejectWarn)
 
 		### spawn the dialog box ###
 		self.warn.exec()
 
 	@pyqtSlot()
 	def rejectWarn(self):
+		'''Dialog to show if 'Cancel' is clicked'''
+		print('rejectWarn')
 		self.warn.reject()
 
 	@pyqtSlot()
 	def acceptWarn(self):
+		'''Dialog to show if 'Accept' is clicked'''
+		print('acceptWarn')
+		subprocess.call(self.cmdStr)
 		self.warn.accept()
 
 	@pyqtSlot(QModelIndex, name='index1')
