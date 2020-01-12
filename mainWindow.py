@@ -41,7 +41,7 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 		### options for Robocopy ###
 		# self.opts = ''
-		self.opts = '/E /MT /COPY:DT'
+		self.opts = '/E /COPY:DT'
 
 		### the command string for Robocopy ###
 		self.cmdStr = ''
@@ -108,11 +108,12 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		msg = QLabel()
 
 		if self.srcPaths != [] and self.dstDirPath != '':
-			msgSrcStr = self.srcPaths[0]
+			# msgSrcStr = self.srcPaths[0]
+			msgSrcStr = self.srcPaths[0] #TODO: iterate through all of the items in this list to construct msgSrcStr
 			msgDstStr = self.dstDirPath
 
-			msgStr = f'roboform {msgSrcStr} {msgDstStr} {self.opts}'
-			self.cmdStr = f'roboform {msgSrcStr} {msgDstStr} {self.opts}'
+			msgStr = f'robocopy {msgSrcStr} {msgDstStr} {self.opts}'
+			self.cmdStr = f'robocopy {msgSrcStr} {msgDstStr} {self.opts}'
 			msg.setText(msgStr)
 		else:
 			msg.setText('BLANK')
@@ -142,15 +143,20 @@ class MainWindowUI(QtWidgets.QMainWindow):
 	def acceptWarn(self):
 		'''Dialog to show if 'Accept' is clicked'''
 		print('acceptWarn')
-		subprocess.call(self.cmdStr)
+		# subprocess.call(self.cmdStr)
+		print(self.cmdStr)
 		self.warn.accept()
 
 	@pyqtSlot(QModelIndex, name='index1')
 	def srcDirSelected(self, index1):
 		''' Get selected path from srcDirView '''
 
+		print(f'index1 = {index1.row()}')
+
 		### get path from srcDirView  ###
 		path = self.model_1.fileInfo(index1).absoluteFilePath()
+
+		self.srcDirView.expand(index1)
 
 		print(f'path: {path}')
 
