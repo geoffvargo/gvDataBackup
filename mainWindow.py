@@ -234,7 +234,8 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		try:
 			stuff = []
 			for i in self.srcFlistView.selectedIndexes():
-				temp2 = self.srcFlistMODEL.filePath(i)
+				temp2 = str(f'{self.srcFlistMODEL.filePath(i)}')
+				# temp2 = self.srcFlistMODEL.filePath(i)
 				temp = temp2.replace("/", "\\")
 				stuff.append(temp)
 			# stuff.append(self.srcFlistMODEL.filePath(i))
@@ -252,7 +253,8 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 	@pyqtSlot()
 	def dstFilesSelected(self):
-		dirry = self.dstFlistMODEL.filePath(self.dstFlistView.selectedIndexes().pop())
+		dirry = str(f'\"{self.dstFlistMODEL.filePath(self.dstFlistView.selectedIndexes().pop())}\"')
+		# dirry = self.dstFlistMODEL.filePath(self.dstFlistView.selectedIndexes().pop())
 		dirry = dirry.replace('/', '\\')
 
 		print(dirry)
@@ -288,8 +290,10 @@ class MainWindowUI(QtWidgets.QMainWindow):
 				subprocess.call(['robocopy', '/?'], shell=True)
 			else:
 				try:
-					print(str(f'robocopy {self.opts} {str(" ").join(map(str, self.srcPaths))} {self.dstDirPath}'))
-				# subprocess.call(str(f'robocopy {self.opts} {str(" ").join(map(str, self.srcPaths))} {self.dstDirPath}'), shell=True)
+					for i in range(self.srcPaths.__len__()):
+						subprocess.call(str(f'robocopy {self.opts} {self.srcPaths[i]} {self.dstDirPath}'), shell=True)
+				# print(str(f'robocopy {self.opts} {self.srcPaths[i]} {self.dstDirPath}'))
+				# print(str(f'robocopy {self.opts} {str(" ").join(map(str, self.srcPaths))} {self.dstDirPath}'))
 				except:
 					print(f'{tb.print_exc()}')
 
@@ -300,15 +304,6 @@ class MainWindowUI(QtWidgets.QMainWindow):
 			print(f'Destination selected = {self.isDstSeleceted}')
 		except:
 			print(f'{tb.print_exc()}')
-
-
-# self.safetyDialog()
-#
-#
-# 	print(f'robocopy {self.opts} {self.srcDirPath} {self.dstDirPath}')
-
-
-# subprocess.call(['robocopy', self.opts, self.srcDirPath, self.dstDirPath], shell=True)
 
 
 if __name__ == "__main__":
