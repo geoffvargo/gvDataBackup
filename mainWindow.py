@@ -74,8 +74,6 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.mainWin: QMainWindow = self.ui.findChild(QMainWindow, "MainWindow")
 		self.srcDirView: QTreeView = self.ui.findChild(QTreeView, "sourceDirView")
 		self.dstDirV: QTreeView = self.ui.findChild(QTreeView, "destDirView")
-		# self.srcFlistView: QListWidget = self.ui.findChild(QListWidget, "sourceFileListWidget")
-		# self.dstFlistView: QListWidget = self.ui.findChild(QListWidget, "destFileListView")
 		self.srcFlistView: QListView = self.ui.findChild(QListView, "sourceFileListView")
 		self.dstFlistView: QListView = self.ui.findChild(QListView, "destFileListView")
 		self.srcPathLNE: QLineEdit = self.ui.findChild(QLineEdit, "sourcePathLNE")
@@ -83,6 +81,7 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.newSrcFolderBTN: QPushButton = self.ui.findChild(QPushButton, "newSrcFolderBTN")
 		self.newDestFolderBTN: QPushButton = self.ui.findChild(QPushButton, "newDstFolderBTN")
 
+		### enable custom right-click menus ###
 		self.srcFlistView.setContextMenuPolicy(Qt.CustomContextMenu)
 		self.dstFlistView.setContextMenuPolicy(Qt.CustomContextMenu)
 
@@ -102,7 +101,7 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.srcFlistView.clicked.connect(self.srcFilesSelected)
 		self.dstFlistView.clicked.connect(self.dstFilesSelected)
 
-		# self.srcFlistView.customContextMenuRequested.connect(self.rightClickMenu)
+		### connect right-click menu slots ###
 		self.srcFlistView.customContextMenuRequested.connect(lambda rm: self.rightClickMenu(self.srcDirView))
 		self.dstFlistView.customContextMenuRequested.connect(lambda rm: self.rightClickMenu(self.dstDirV))
 
