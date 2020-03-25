@@ -93,6 +93,7 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.dstFlistView.setModel(self.dstFlistMODEL)
 
 		self.dstDirMODEL.setObjectName("dstDirMODEL")
+
 		### selecting item(s) in treeview(s) return(s) pathname(s) ###
 		self.srcDirView.clicked.connect(self.srcDirSelected)
 		self.dstDirV.clicked.connect(self.dstDirSelected)
@@ -104,10 +105,6 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		# self.srcFlistView.customContextMenuRequested.connect(self.rightClickMenu)
 		self.srcFlistView.customContextMenuRequested.connect(lambda rm: self.rightClickMenu(self.srcDirView))
 		self.dstFlistView.customContextMenuRequested.connect(lambda rm: self.rightClickMenu(self.dstDirV))
-
-	### double-clicking a directory in a listview opens and displays that directory ###
-	# self.srcFlistView.doubleClicked.connect(self.srcDirSelected)
-	# self.dstFlistView.doubleClicked.connect(self.dstDirSelected)
 
 	def safetyDialog(self) -> None:
 		'''	Spawn a modal QDialog window with info about the source and destination locations, as well as
