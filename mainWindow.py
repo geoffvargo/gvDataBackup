@@ -155,9 +155,7 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 		menu = QMenu()
 		nf = QAction('New Folder')
-		# nf.setEnabled(False)
 		menu.addAction(nf)
-		# nf.triggered.connect(self.createNewFolder)
 		nf.triggered.connect(lambda t: self.createNewFolder(view, model, dirView))
 		menu.addSeparator()
 		quitAction = menu.addAction("Quit")
