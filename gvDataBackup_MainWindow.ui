@@ -221,7 +221,7 @@
           </property>
           <widget class="QTreeView" name="sourceDirView">
            <property name="editTriggers">
-            <set>QAbstractItemView::CurrentChanged|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+            <set>QAbstractItemView::NoEditTriggers</set>
            </property>
            <property name="alternatingRowColors">
             <bool>true</bool>
@@ -231,6 +231,15 @@
            </property>
           </widget>
           <widget class="QListView" name="sourceFileListView">
+           <property name="editTriggers">
+            <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+           </property>
+           <property name="dragEnabled">
+            <bool>true</bool>
+           </property>
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
            <property name="selectionMode">
             <enum>QAbstractItemView::MultiSelection</enum>
            </property>
@@ -320,6 +329,29 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="newSrcFolderBTN">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normaloff>Clipboarder.2020.01.22-003.png</normaloff>Clipboarder.2020.01.22-003.png</iconset>
+             </property>
+             <property name="shortcut">
+              <string/>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QLineEdit" name="sourcePathLNE"/>
            </item>
            <item>
@@ -360,10 +392,20 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <widget class="QTreeView" name="destDirView"/>
+          <widget class="QTreeView" name="destDirView">
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+          </widget>
           <widget class="QListView" name="destFileListView">
+           <property name="editTriggers">
+            <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+           </property>
+           <property name="dragEnabled">
+            <bool>false</bool>
+           </property>
            <property name="selectionMode">
-            <enum>QAbstractItemView::SingleSelection</enum>
+            <enum>QAbstractItemView::MultiSelection</enum>
            </property>
            <property name="selectionRectVisible">
             <bool>true</bool>
@@ -418,6 +460,9 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="acceptDrops">
+              <bool>true</bool>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -444,6 +489,23 @@
              <property name="icon">
               <iconset>
                <normaloff>upICN.ico</normaloff>upICN.ico</iconset>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="newDstFolderBTN">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normaloff>Clipboarder.2020.01.22-003.png</normaloff>Clipboarder.2020.01.22-003.png</iconset>
              </property>
              <property name="flat">
               <bool>true</bool>

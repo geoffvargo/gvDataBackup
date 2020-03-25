@@ -1,10 +1,12 @@
 # Define function to import external files when using PyInstaller.
-import os, sys, subprocess
+import os
+import sys
+import traceback as tb
+import subprocess
 
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtCore import QObject, pyqtSlot, QFile, QModelIndex, pyqtSignal, QDir
+from PyQt5 import QtCore, QtWidgets, uic, QtGui
+from PyQt5.QtCore import pyqtSlot, QModelIndex, Qt
 from PyQt5.QtWidgets import *
-import traceback
 
 
 def resource_path(relative_path):
@@ -17,8 +19,10 @@ def resource_path(relative_path):
 
 	return os.path.join(base_path, relative_path)
 
+
 ### connect *.ui file to code ###
 uiPath = resource_path('gvDataBackup_MainWindow.ui')
+
 
 ### the meat of the program  ###
 class MainWindowUI(QtWidgets.QMainWindow):
@@ -40,7 +44,6 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.srcPaths = []
 
 		### options for Robocopy ###
-		# self.opts = ''
 		self.opts = '/E /COPY:DT'
 
 		### the command string for Robocopy ###
@@ -54,35 +57,42 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.destRefreshBTN.clicked.connect(self.destRefresh)
 		self.actionQuit.triggered.connect(QApplication.quit)
 
-		self.model_1 = QFileSystemModel()
-		self.model_1.setRootPath('')
+		self.srcDirMODEL = QFileSystemModel()
+		self.srcDirMODEL.setRootPath('')
 
-		self.model_2 = QFileSystemModel()
-		self.model_2.setRootPath('')
+		self.dstDirMODEL = QFileSystemModel()
+		self.dstDirMODEL.setRootPath('')
 
-		self.model_3 = QFileSystemModel()
-		self.model_3.setRootPath('')
+		self.srcFlistMODEL = QFileSystemModel()
+		self.srcFlistMODEL.setRootPath('')
+		self.srcFlistMODEL.setReadOnly(False)
 
-		self.model_4 = QFileSystemModel()
-		self.model_4.setRootPath('')
+		self.dstFlistMODEL = QFileSystemModel()
+		self.dstFlistMODEL.setRootPath('')
 
 		### link QML elements to Python variables ###
 		self.mainWin: QMainWindow = self.ui.findChild(QMainWindow, "MainWindow")
 		self.srcDirView: QTreeView = self.ui.findChild(QTreeView, "sourceDirView")
 		self.dstDirV: QTreeView = self.ui.findChild(QTreeView, "destDirView")
-		# self.srcFlistView: QListWidget = self.ui.findChild(QListView, "sourceFileListView")
-		# self.dstFlistView: QListWidget = self.ui.findChild(QListView, "destFileListView")
+		# self.srcFlistView: QListWidget = self.ui.findChild(QListWidget, "sourceFileListWidget")
+		# self.dstFlistView: QListWidget = self.ui.findChild(QListWidget, "destFileListView")
 		self.srcFlistView: QListView = self.ui.findChild(QListView, "sourceFileListView")
 		self.dstFlistView: QListView = self.ui.findChild(QListView, "destFileListView")
 		self.srcPathLNE: QLineEdit = self.ui.findChild(QLineEdit, "sourcePathLNE")
 		self.dstPathLNE: QLineEdit = self.ui.findChild(QLineEdit, "destPathLNE")
+		self.newSrcFolderBTN: QPushButton = self.ui.findChild(QPushButton, "newSrcFolderBTN")
+		self.newDestFolderBTN: QPushButton = self.ui.findChild(QPushButton, "newDstFolderBTN")
+
+		self.srcFlistView.setContextMenuPolicy(Qt.CustomContextMenu)
+		self.dstFlistView.setContextMenuPolicy(Qt.CustomContextMenu)
 
 		### set up file-system models ###
-		self.srcDirView.setModel(self.model_1)
-		self.srcFlistView.setModel(self.model_3)
-		self.dstDirV.setModel(self.model_2)
-		self.dstFlistView.setModel(self.model_4)
+		self.srcDirView.setModel(self.srcDirMODEL)
+		self.srcFlistView.setModel(self.srcFlistMODEL)
+		self.dstDirV.setModel(self.dstDirMODEL)
+		self.dstFlistView.setModel(self.dstFlistMODEL)
 
+		self.dstDirMODEL.setObjectName("dstDirMODEL")
 		### selecting item(s) in treeview(s) return(s) pathname(s) ###
 		self.srcDirView.clicked.connect(self.srcDirSelected)
 		self.dstDirV.clicked.connect(self.dstDirSelected)
@@ -91,9 +101,13 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		self.srcFlistView.clicked.connect(self.srcFilesSelected)
 		self.dstFlistView.clicked.connect(self.dstFilesSelected)
 
-		### double-clicking a directory in a listview opens and displays that directory ###
-		self.srcFlistView.doubleClicked.connect(self.srcDirSelected)
-		self.dstFlistView.doubleClicked.connect(self.dstDirSelected)
+		# self.srcFlistView.customContextMenuRequested.connect(self.rightClickMenu)
+		self.srcFlistView.customContextMenuRequested.connect(lambda rm: self.rightClickMenu(self.srcDirView))
+		self.dstFlistView.customContextMenuRequested.connect(lambda rm: self.rightClickMenu(self.dstDirV))
+
+	### double-clicking a directory in a listview opens and displays that directory ###
+	# self.srcFlistView.doubleClicked.connect(self.srcDirSelected)
+	# self.dstFlistView.doubleClicked.connect(self.dstDirSelected)
 
 	def safetyDialog(self) -> None:
 		'''	Spawn a modal QDialog window with info about the source and destination locations, as well as
@@ -108,8 +122,9 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		msg = QLabel()
 
 		if self.srcPaths != [] and self.dstDirPath != '':
-			# msgSrcStr = self.srcPaths[0]
-			msgSrcStr = self.srcPaths[0] #TODO: iterate through all of the items in this list to construct msgSrcStr
+			msgSrcStr = self.srcPaths[0]
+			for i in range(1, self.srcPaths.__len__()):
+				msgSrcStr += ' ' + self.srcPaths[i]
 			msgDstStr = self.dstDirPath
 
 			msgStr = f'robocopy {msgSrcStr} {msgDstStr} {self.opts}'
@@ -133,6 +148,37 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		### spawn the dialog box ###
 		self.warn.exec()
 
+	def rightClickMenu(self, dirView: QTreeView):
+		view: QListView = self.sender()
+		model: QFileSystemModel = view.model()
+
+		print(f'right-click')
+		print(f'{view.objectName()}')
+		print(f'{model.objectName()}')
+
+		menu = QMenu()
+		nf = QAction('New Folder')
+		# nf.setEnabled(False)
+		menu.addAction(nf)
+		# nf.triggered.connect(self.createNewFolder)
+		nf.triggered.connect(lambda t: self.createNewFolder(view, model, dirView))
+		menu.addSeparator()
+		quitAction = menu.addAction("Quit")
+
+		action = menu.exec_(QtGui.QCursor.pos())
+
+	def createNewFolder(self, view: QListView, model: QFileSystemModel, dir: QTreeView):
+		sender = self.sender()
+		vm: QFileSystemModel = view.model()
+
+		print(f'{self.sender()}')
+		print(f'{view.objectName()}')
+		print(f'{view.model().objectName()}')
+
+		nfi: QModelIndex = model.mkdir(dir.currentIndex(), 'new folder')
+
+		print(f'new folder')
+
 	@pyqtSlot()
 	def rejectWarn(self):
 		'''Dialog to show if 'Cancel' is clicked'''
@@ -154,14 +200,14 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		print(f'index1 = {index1.row()}')
 
 		### get path from srcDirView  ###
-		path = self.model_1.fileInfo(index1).absoluteFilePath()
+		path = self.srcDirMODEL.fileInfo(index1).absoluteFilePath().replace('/', '\\')
 
 		self.srcDirView.expand(index1)
 
 		print(f'path: {path}')
 
 		### update srcFlistView ###
-		self.srcFlistView.setRootIndex(self.model_3.setRootPath(path))
+		self.srcFlistView.setRootIndex(self.srcFlistMODEL.setRootPath(path))
 
 		### update self.srcPath ###
 		self.srcDirPath = path
@@ -175,12 +221,12 @@ class MainWindowUI(QtWidgets.QMainWindow):
 		''' Get selected path from dstDirView '''
 
 		### get path from dstDirView ###
-		path = self.model_2.fileInfo(index2).absoluteFilePath()
+		path = self.dstDirMODEL.fileInfo(index2).absoluteFilePath()
 
 		print(f'path: {path}')
 
 		### update dstFlistView ###
-		self.dstFlistView.setRootIndex(self.model_4.setRootPath(path))
+		self.dstFlistView.setRootIndex(self.dstFlistMODEL.setRootPath(path))
 
 		### update srcPath ###
 		self.dstDirPath = path
@@ -191,10 +237,16 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 	@pyqtSlot()
 	def srcFilesSelected(self):
-		stuff = []
-		for i in self.srcFlistView.selectedIndexes():
-			stuff.append(self.model_3.filePath(i))
-		self.srcPaths = stuff
+		try:
+			stuff = []
+			for i in self.srcFlistView.selectedIndexes():
+				temp2 = self.srcFlistMODEL.filePath(i)
+				temp = temp2.replace("/", "\\")
+				stuff.append(temp)
+			# stuff.append(self.srcFlistMODEL.filePath(i))
+			self.srcPaths = stuff
+		except:
+			print(f'{tb.print_exc()}')
 
 		print(self.srcPaths)
 
@@ -206,7 +258,8 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 	@pyqtSlot()
 	def dstFilesSelected(self):
-		dirry = self.model_4.filePath(self.dstFlistView.selectedIndexes().pop())
+		dirry = self.dstFlistMODEL.filePath(self.dstFlistView.selectedIndexes().pop())
+		dirry = dirry.replace('/', '\\')
 
 		print(dirry)
 
@@ -223,6 +276,8 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 	@pyqtSlot(name='')
 	def sourceRefresh(self):
+		path = self.srcFlistMODEL.rootPath()
+		self.srcFlistView.setRootIndex(self.srcFlistMODEL.setRootPath(path))
 		print('sourceRefreshBTN clicked')
 
 	@pyqtSlot(name='')
@@ -231,23 +286,32 @@ class MainWindowUI(QtWidgets.QMainWindow):
 
 	@pyqtSlot(name='')
 	def startBackup(self):
-		# if self.opts == '':
-		# 	subprocess.call(['robocopy', '/?'], shell=True)
-		# else:
-		# 	subprocess.call(['robocopy', self.opts], shell=True)
+		try:
+			if self.isSrcSelected and self.isDstSeleceted:
+				self.opts = '/E /MT /COPY:DT'
 
-		# print(f'self.srcPath: {self.srcPath}')
-		# print(f'self.dstPath: {self.dstPath}')
+			if self.opts == '':
+				subprocess.call(['robocopy', '/?'], shell=True)
+			else:
+				try:
+					print(str(f'robocopy {self.opts} {str(" ").join(map(str, self.srcPaths))} {self.dstDirPath}'))
+				# subprocess.call(str(f'robocopy {self.opts} {str(" ").join(map(str, self.srcPaths))} {self.dstDirPath}'), shell=True)
+				except:
+					print(f'{tb.print_exc()}')
 
-		# print(f'Source selected = {self.isSrcSelected}')
-		# print(f'Destination selected = {self.isDstSeleceted}')
+			print(f'self.srcPath: {self.srcDirPath}')
+			print(f'self.dstPath: {self.dstDirPath}')
 
-		self.safetyDialog()
+			print(f'Source selected = {self.isSrcSelected}')
+			print(f'Destination selected = {self.isDstSeleceted}')
+		except:
+			print(f'{tb.print_exc()}')
 
-		if self.isSrcSelected and self.isDstSeleceted:
-			self.opts = '/E /MT /COPY:DT'
 
-			print(f'robocopy {self.opts} {self.srcDirPath} {self.dstDirPath}')
+# self.safetyDialog()
+#
+#
+# 	print(f'robocopy {self.opts} {self.srcDirPath} {self.dstDirPath}')
 
 
 # subprocess.call(['robocopy', self.opts, self.srcDirPath, self.dstDirPath], shell=True)
