@@ -292,6 +292,7 @@ class MainWindowUI(QtWidgets.QMainWindow):
 				try:
 					for i in range(self.srcPaths.__len__()):
 						subprocess.call(str(f'robocopy {self.opts} {self.srcPaths[i]} {self.dstDirPath}'), shell=True)
+
 				# print(str(f'robocopy {self.opts} {self.srcPaths[i]} {self.dstDirPath}'))
 				# print(str(f'robocopy {self.opts} {str(" ").join(map(str, self.srcPaths))} {self.dstDirPath}'))
 				except:
