@@ -291,6 +291,7 @@ class MainWindowUI(QtWidgets.QMainWindow):
 			else:
 				try:
 					for i in range(self.srcPaths.__len__()):
+						print(str(f'robocopy {self.opts} {self.srcPaths[i]} {self.dstDirPath}'))
 						subprocess.call(str(f'robocopy {self.opts} {self.srcPaths[i]} {self.dstDirPath}'), shell=True)
 
 				# print(str(f'robocopy {self.opts} {self.srcPaths[i]} {self.dstDirPath}'))
