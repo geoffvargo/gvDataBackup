@@ -1,3 +1,6 @@
+#  Copyright (c) 2020. Geoff Vargo
+#
+
 # Define function to import external files when using PyInstaller.
 import os
 import sys
